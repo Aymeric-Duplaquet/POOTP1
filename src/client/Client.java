@@ -38,6 +38,17 @@ public class Client {
 	            msgList.push(msg);
 	            
 	            outToServer.writeObject(msg); 
+	            
+	            while(true)
+	            {
+	            	fromServer = inFromServer.readObject();
+	            	if(fromServer!=null)
+	            	{
+	            		Commande inCmd = (Commande) fromServer;
+	            		System.out.println("Client : "+ inCmd.getCommande());
+	            		break;
+	            	}
+	            }
 
 	            /*
 	            // Lecture des informations en provenance du serveur.

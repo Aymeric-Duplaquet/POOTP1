@@ -28,6 +28,8 @@ public static void main(String[] args) throws IOException, ClassNotFoundExceptio
 
             Object inputObject, outputObject;
             Commande inCmd;
+            Commande outCmd = new Commande();
+            outCmd.setCommande("Hello from server");
             outputObject= new Object();
             
             // Initiate conversation with client
@@ -36,6 +38,12 @@ public static void main(String[] args) throws IOException, ClassNotFoundExceptio
            
             while (true) {
             	//outputObject = kkp.processInput(inputObject);
+            	
+            	outToClient.writeObject(outCmd);
+            	
+            	
+            	/*
+            	//Lire un input client 
             	inputObject = inFromClient.readObject();
             	if(inputObject!=null)
             	{
@@ -43,6 +51,8 @@ public static void main(String[] args) throws IOException, ClassNotFoundExceptio
             		System.out.println("Serveur : "+ inCmd.getCommande());
             		break;
             	}
+            	*/
+            	
                 /*outToClient.writeObject(outputObject);
                 if (outputObject.equals("Bye."))
                     break;
