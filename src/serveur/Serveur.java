@@ -2,11 +2,12 @@ package serveur;
 import java.net.*;
 import java.io.*;
 
+import common.Commande;
 import common.TempoKnockKnockProtocole;
 
 
 public class Serveur {
-public static void main(String[] args) throws IOException {
+public static void main(String[] args) throws IOException, ClassNotFoundException {
         
         if (args.length != 1) {
             System.err.println("Usage: java KnockKnockServer <port number>");
@@ -20,24 +21,32 @@ public static void main(String[] args) throws IOException {
         		// En attente d'une requête par le client.
             Socket clientSocket = serverSocket.accept();
         		// Pour écrire des informations à destination du client.
-            PrintWriter out =
-                new PrintWriter(clientSocket.getOutputStream(), true);
+        		ObjectOutputStream  outToClient  = new ObjectOutputStream(clientSocket.getOutputStream());
         		// Pour lire les informations en provenance du client.
-            BufferedReader in = new BufferedReader(
-                new InputStreamReader(clientSocket.getInputStream()));
-        ) {
-        	System.out.println("Serveur Ready");
-            String inputLine, outputLine;
+        		ObjectInputStream inFromClient = new ObjectInputStream(clientSocket.getInputStream());
+        		) {
+
+            Object inputObject, outputObject;
+            Commande inCmd;
+            outputObject= new Object();
             
             // Initiate conversation with client
-            TempoKnockKnockProtocole kkp = new TempoKnockKnockProtocole();
-            outputLine = kkp.processInput(null);
-            out.println(outputLine);
-            while ((inputLine = in.readLine()) != null) {
-                outputLine = kkp.processInput(inputLine);
-                out.println(outputLine);
-                if (outputLine.equals("Bye."))
+            //TempoKnockKnockProtocole kkp = new TempoKnockKnockProtocole();
+            //outputLine = kkp.processInput(null);
+           
+            while (true) {
+            	//outputObject = kkp.processInput(inputObject);
+            	inputObject = inFromClient.readObject();
+            	if(inputObject!=null)
+            	{
+            		inCmd = (Commande) inputObject;
+            		System.out.println("Serveur : "+ inCmd.getCommande());
+            		break;
+            	}
+                /*outToClient.writeObject(outputObject);
+                if (outputObject.equals("Bye."))
                     break;
+                 */
             }
         } catch (IOException e) {
             System.out.println("Exception caught when trying to listen on port "
