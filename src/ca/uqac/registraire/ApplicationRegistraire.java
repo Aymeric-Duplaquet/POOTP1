@@ -1,5 +1,6 @@
 package ca.uqac.registraire;
 import java.io.*;
+import common.Commande;
 
 /**
  * Title:        Classes for TP1
