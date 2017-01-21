@@ -1,5 +1,7 @@
 package common;
 
-public class Commande {
+import java.io.Serializable;
+
+public class Commande implements Serializable{
 
 }
