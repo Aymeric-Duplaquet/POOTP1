@@ -17,9 +17,12 @@ public static void main(String[] args) throws IOException {
         
         try ( 
             ServerSocket serverSocket = new ServerSocket(portNumber);
+        		// En attente d'une requête par le client.
             Socket clientSocket = serverSocket.accept();
+        		// Pour écrire des informations à destination du client.
             PrintWriter out =
                 new PrintWriter(clientSocket.getOutputStream(), true);
+        		// Pour lire les informations en provenance du client.
             BufferedReader in = new BufferedReader(
                 new InputStreamReader(clientSocket.getInputStream()));
         ) {
@@ -30,7 +33,6 @@ public static void main(String[] args) throws IOException {
             TempoKnockKnockProtocole kkp = new TempoKnockKnockProtocole();
             outputLine = kkp.processInput(null);
             out.println(outputLine);
-            System.out.println("Serveur Ready");
             while ((inputLine = in.readLine()) != null) {
                 outputLine = kkp.processInput(inputLine);
                 out.println(outputLine);

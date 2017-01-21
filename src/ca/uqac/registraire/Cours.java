@@ -13,6 +13,7 @@ import java.util.*;
 public class Cours {
 
   private String titre;
+   
 
   private Hashtable etudiants;
 
