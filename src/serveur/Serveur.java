@@ -89,34 +89,36 @@ public class Serveur {
 		String commandeTypeStr;
 		String[] tempoSplit = strCmd.split("#");
 		commandeTypeStr = tempoSplit[0];
-
-		if(commandeTypeStr.compareTo("compilation")==0)
-		{
+		
+		switch (uneCommande.getType()) {
+		case compilation : {
 			System.out.println("Commande compilation detect�");
+			traiterCompilation(strCmd);
+			break;
 		}
-		else if(commandeTypeStr.compareTo("chargement")==0)
-		{
+		case chargement : {
 			System.out.println("Commande chargement detect�");
+			break;
 		}
-		else if(commandeTypeStr.compareTo("creation")==0)
-		{
+		case creation : {
 			System.out.println("Commande creation detect�");
+			break;
 		}
-		else if(commandeTypeStr.compareTo("lecture")==0)
-		{
+		case lecture : {
 			System.out.println("Commande lecture detect�");
+			break;
 		}
-		else if(commandeTypeStr.compareTo("ecriture")==0)
-		{
+		case ecriture : {
 			System.out.println("Commande ecriture detect�");
+			break;
 		}
-		else if(commandeTypeStr.compareTo("fonction")==0)
-		{
+		case fonction : {
 			System.out.println("Commande fonction detect�");
+			break;
 		}
-		else
-		{
+		default:
 			System.out.println("Commande non reconnue");
+			break;
 		}
 	}
 
@@ -163,7 +165,7 @@ public class Serveur {
 	 */
 	public void traiterCompilation(String cheminRelatifFichierSource) 
 	{
-
+		
 	}
 
 	/**
