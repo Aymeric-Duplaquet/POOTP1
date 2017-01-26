@@ -9,7 +9,6 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.net.UnknownHostException;
-import java.util.LinkedList;
 
 import common.Commande;
 import common.TypeCommande;
@@ -18,7 +17,9 @@ public class ApplicationClient {
 
 	private int portNumber=4444;
 	private String hostName="";
-//	private BufferedReader bufferFichierEntre;
+	
+	private BufferedReader commandesReader;
+	private BufferedReader resultReader;
 
 	public ApplicationClient(String hostname,String port){
 		this.portNumber=Integer.parseInt(port);
@@ -33,10 +34,13 @@ public class ApplicationClient {
 			while ((ligne=fichier.readLine())!=null){
 				commande.setCommande(ligne);
 			}
-			*/
+			 */
 			String ligne=fichier.readLine();
+			if(ligne==null){
+				return null;
+			}
 			commande.setCommande(ligne);
-			fichier.close(); 
+//			fichier.close(); 
 		}		
 		catch (Exception e){
 			System.out.println(e.toString());
@@ -47,12 +51,12 @@ public class ApplicationClient {
 		traiteCommande(commande);
 		return commande;
 	}
-	
+
 	public Commande discriminationCommande (Commande commande){
-		
+
 
 		String strCmd = commande.getCommande();
-		String[] tempoSplit = strCmd.split("#");
+		String[] tempoSplit = strCmd.split("#",2);
 		String commandeTypeStr = tempoSplit[0];
 
 		if(commandeTypeStr.compareTo("compilation")==0)
@@ -83,19 +87,18 @@ public class ApplicationClient {
 		{
 			System.out.println("Commande non reconnue");
 		}
-		
+
 		commande.setCommande(tempoSplit[1]);
 		return commande;
 	}
 
-	
+
 	public void initialise(String fichCommandes, String fichSortie) {
 		InputStream ipsCommandes;
 		try {
 			ipsCommandes = new FileInputStream(fichCommandes);
 			InputStreamReader ipsrCommandes=new InputStreamReader(ipsCommandes);
-			//			BufferedReader brCommandes=new BufferedReader(ipsrCommandes);
-			//	    	appli.saisisCommande(br);
+			commandesReader=new BufferedReader(ipsrCommandes);
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -105,12 +108,16 @@ public class ApplicationClient {
 		try {
 			ipsSortie = new FileInputStream(fichSortie);
 			InputStreamReader ipsrSortie=new InputStreamReader(ipsSortie);
-			//			BufferedReader brSortie=new BufferedReader(ipsrSortie);
-			//	    	appli.saisisCommande(br);
+			resultReader=new BufferedReader(ipsrSortie);
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} 
+	}
+	
+	public void close() throws IOException{
+		commandesReader.close();
+		resultReader.close();
 	}
 
 	public Object traiteCommande(Commande uneCommande) throws ClassNotFoundException {
@@ -125,14 +132,15 @@ public class ApplicationClient {
 				) {
 			outToServer.writeObject(uneCommande); 
 
-
-			while(true)
-			{
-				// Lecture des informations en provenance du serveur
-				fromServer = inFromServer.readObject();
-				if(fromServer!=null) {break;}
+			if(uneCommande.getType()==TypeCommande.lecture || uneCommande.getType()==TypeCommande.fonction ){
+				while(true)
+				{
+					// Lecture des informations en provenance du serveur
+					fromServer = inFromServer.readObject();
+					if(fromServer!=null) {break;}
+				}
 			}
-
+			
 		} catch (UnknownHostException e) {
 			System.err.println("Don't know about host " + hostName);
 			System.exit(1);
@@ -145,7 +153,7 @@ public class ApplicationClient {
 		return fromServer;
 	}
 
-	 /* public void scenario() {
+	 public void scenario() throws ClassNotFoundException {
 		    System.out.println("Debut des traitements:");
 		    Commande prochaine = saisisCommande(commandesReader);
 		    while (prochaine != null) {
@@ -155,15 +163,14 @@ public class ApplicationClient {
 		      prochaine = saisisCommande(commandesReader);
 		    }
 		    System.out.println("Fin des traitements");
-		  }*/
+		  }
 
-	public static void main(String[] args) throws FileNotFoundException, ClassNotFoundException {
+	public static void main(String[] args) throws ClassNotFoundException, IOException {
 		ApplicationClient appli = new ApplicationClient(args[0],args[1]);
-		InputStream ipsCommandes = new FileInputStream("src/client/Commandes.txt");
-		InputStreamReader ipsrCommandes=new InputStreamReader(ipsCommandes);
-		BufferedReader brCommandes=new BufferedReader(ipsrCommandes);
-		appli.saisisCommande(brCommandes);
-		
+		appli.initialise(args[2], args[3]);
+		appli.scenario();
+		appli.close();
+
 	}
 
 }
