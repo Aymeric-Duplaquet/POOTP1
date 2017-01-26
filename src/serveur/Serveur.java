@@ -9,6 +9,10 @@ import common.Commande;
 public class Serveur {
 
 	private ServerSocket serverSocket;
+	
+	private ObjectInputStream inFromClient;
+	private ObjectOutputStream  outToClient;
+	
 
 	//Tempo main pour test
 	public static void main(String[] args) throws IOException
@@ -57,9 +61,9 @@ public class Serveur {
 
 		Socket clientSocket = serverSocket.accept();
 		// Pour Ã©crire des informations Ã  destination du client.
-		ObjectOutputStream  outToClient  = new ObjectOutputStream(clientSocket.getOutputStream());
+		outToClient  = new ObjectOutputStream(clientSocket.getOutputStream());
 		// Pour lire les informations en provenance du client.
-		ObjectInputStream inFromClient = new ObjectInputStream(clientSocket.getInputStream());
+		inFromClient = new ObjectInputStream(clientSocket.getInputStream());
 
 		Object inputObject;
 		Commande inCmd;
@@ -82,8 +86,9 @@ public class Serveur {
 	/**
 	 * prend uneCommande dument formattï¿½e, et la traite. Dï¿½pendant du type de commande, 
 	 * elle appelle la mï¿½thode spï¿½cialisï¿½e
+	 * @throws IOException 
 	 */
-	public void traiteCommande(Commande uneCommande) 
+	public void traiteCommande(Commande uneCommande) throws IOException 
 	{
 		String strCmd = uneCommande.getCommande();
 		String commandeTypeStr;
@@ -106,6 +111,8 @@ public class Serveur {
 		}
 		case lecture : {
 			System.out.println("Commande lecture detectï¿½");
+			outToClient.writeObject(new String("Hello from serveur"));
+			System.out.println("Réponse envoyé");
 			break;
 		}
 		case ecriture : {
@@ -114,6 +121,8 @@ public class Serveur {
 		}
 		case fonction : {
 			System.out.println("Commande fonction detectï¿½");
+			outToClient.writeObject(new String("Hello from serveur"));
+			System.out.println("Réponse envoyé");
 			break;
 		}
 		default:
