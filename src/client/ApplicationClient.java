@@ -44,6 +44,42 @@ public class ApplicationClient {
 		traiteCommande(commande);
 		return commande;
 	}
+	
+	public void discriminationCommande (Commande commande){
+		
+		String strCmd = commande.getCommande();
+		String[] tempoSplit = strCmd.split("#");
+		String commandeTypeStr = tempoSplit[0];
+
+		if(commandeTypeStr.compareTo("compilation")==0)
+		{
+			
+		}
+		else if(commandeTypeStr.compareTo("chargement")==0)
+		{
+			
+		}
+		else if(commandeTypeStr.compareTo("creation")==0)
+		{
+			
+		}
+		else if(commandeTypeStr.compareTo("lecture")==0)
+		{
+			
+		}
+		else if(commandeTypeStr.compareTo("ecriture")==0)
+		{
+			
+		}
+		else if(commandeTypeStr.compareTo("fonction")==0)
+		{
+			
+		}
+		else
+		{
+			System.out.println("Commande non reconnue");
+		}
+	}
 
 	
 	public void initialise(String fichCommandes, String fichSortie) {
