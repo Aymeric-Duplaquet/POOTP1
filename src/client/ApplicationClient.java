@@ -12,6 +12,7 @@ import java.net.UnknownHostException;
 import java.util.LinkedList;
 
 import common.Commande;
+import common.TypeCommande;
 
 public class ApplicationClient {
 
@@ -41,44 +42,50 @@ public class ApplicationClient {
 			System.out.println(e.toString());
 		}
 		System.out.println(commande.getCommande());
+		commande = discriminationCommande(commande);
+		System.out.println(commande.getCommande());
 		traiteCommande(commande);
 		return commande;
 	}
 	
-	public void discriminationCommande (Commande commande){
+	public Commande discriminationCommande (Commande commande){
 		
+
 		String strCmd = commande.getCommande();
 		String[] tempoSplit = strCmd.split("#");
 		String commandeTypeStr = tempoSplit[0];
 
 		if(commandeTypeStr.compareTo("compilation")==0)
 		{
-			
+			commande.setType(TypeCommande.compilation);
 		}
 		else if(commandeTypeStr.compareTo("chargement")==0)
 		{
-			
+			commande.setType(TypeCommande.chargement);
 		}
 		else if(commandeTypeStr.compareTo("creation")==0)
 		{
-			
+			commande.setType(TypeCommande.creation);
 		}
 		else if(commandeTypeStr.compareTo("lecture")==0)
 		{
-			
+			commande.setType(TypeCommande.lecture);
 		}
 		else if(commandeTypeStr.compareTo("ecriture")==0)
 		{
-			
+			commande.setType(TypeCommande.ecriture);
 		}
 		else if(commandeTypeStr.compareTo("fonction")==0)
 		{
-			
+			commande.setType(TypeCommande.fonction);
 		}
 		else
 		{
 			System.out.println("Commande non reconnue");
 		}
+		
+		commande.setCommande(tempoSplit[1]);
+		return commande;
 	}
 
 	

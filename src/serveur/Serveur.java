@@ -3,7 +3,7 @@ import java.net.*;
 import java.io.*;
 
 import common.Commande;
-import common.TempoKnockKnockProtocole;
+
 
 
 public class Serveur {
@@ -37,7 +37,7 @@ public class Serveur {
 	}
 
 	/**
-	 * prend le numéro de port, crée un SocketServer sur le port
+	 * prend le numï¿½ro de port, crï¿½e un SocketServer sur le port
 	 * @throws IOException 
 	 */
 	public Serveur (int port) throws IOException 
@@ -47,7 +47,7 @@ public class Serveur {
 
 	/**
 	 * Se met en attente de connexions des clients. Suite aux connexions, elle lit
-	 * ce qui est envoyé à travers la Socket, recrée l’objet Commande envoyé par
+	 * ce qui est envoyï¿½ ï¿½ travers la Socket, recrï¿½e lï¿½objet Commande envoyï¿½ par
 	 * le client, et appellera traiterCommande(Commande uneCommande)
 	 * @throws IOException 
 	 * @throws ClassNotFoundException 
@@ -80,8 +80,8 @@ public class Serveur {
 	}
 
 	/**
-	 * prend uneCommande dument formattée, et la traite. Dépendant du type de commande, 
-	 * elle appelle la méthode spécialisée
+	 * prend uneCommande dument formattï¿½e, et la traite. Dï¿½pendant du type de commande, 
+	 * elle appelle la mï¿½thode spï¿½cialisï¿½e
 	 */
 	public void traiteCommande(Commande uneCommande) 
 	{
@@ -92,27 +92,27 @@ public class Serveur {
 
 		if(commandeTypeStr.compareTo("compilation")==0)
 		{
-			System.out.println("Commande compilation detecté");
+			System.out.println("Commande compilation detectï¿½");
 		}
 		else if(commandeTypeStr.compareTo("chargement")==0)
 		{
-			System.out.println("Commande chargement detecté");
+			System.out.println("Commande chargement detectï¿½");
 		}
 		else if(commandeTypeStr.compareTo("creation")==0)
 		{
-			System.out.println("Commande creation detecté");
+			System.out.println("Commande creation detectï¿½");
 		}
 		else if(commandeTypeStr.compareTo("lecture")==0)
 		{
-			System.out.println("Commande lecture detecté");
+			System.out.println("Commande lecture detectï¿½");
 		}
 		else if(commandeTypeStr.compareTo("ecriture")==0)
 		{
-			System.out.println("Commande ecriture detecté");
+			System.out.println("Commande ecriture detectï¿½");
 		}
 		else if(commandeTypeStr.compareTo("fonction")==0)
 		{
-			System.out.println("Commande fonction detecté");
+			System.out.println("Commande fonction detectï¿½");
 		}
 		else
 		{
@@ -121,7 +121,7 @@ public class Serveur {
 	}
 
 	/**
-	 * traiterLecture : traite la lecture d’un attribut. Renvoies le résultat par le 
+	 * traiterLecture : traite la lecture dï¿½un attribut. Renvoies le rï¿½sultat par le 
 	 * socket
 	 */
 	public void traiterLecture(Object pointeurObjet, String attribut) 
@@ -130,8 +130,8 @@ public class Serveur {
 	}
 
 	/**
-	 * traiterEcriture : traite l’écriture d’un attribut. Confirmes au client que l’écriture
-	 * s’est faite correctement.
+	 * traiterEcriture : traite lï¿½ï¿½criture dï¿½un attribut. Confirmes au client que lï¿½ï¿½criture
+	 * sï¿½est faite correctement.
 	 */
 	public void traiterEcriture(Object pointeurObjet, String attribut, Object valeur) 
 	{
@@ -139,8 +139,8 @@ public class Serveur {
 	}
 
 	/**
-	 * traiterCreation : traite la création d’un objet. Confirme au client que la création
-	 * s’est faite correctement.
+	 * traiterCreation : traite la crï¿½ation dï¿½un objet. Confirme au client que la crï¿½ation
+	 * sï¿½est faite correctement.
 	 */
 	public void traiterCreation(Class classeDeLobjet, String identificateur) 
 	{
@@ -148,8 +148,8 @@ public class Serveur {
 	}
 
 	/**
-	 * traiterChargement : traite le chargement d’une classe. Confirmes au client que la création
-	 * s’est faite correctement.
+	 * traiterChargement : traite le chargement dï¿½une classe. Confirmes au client que la crï¿½ation
+	 * sï¿½est faite correctement.
 	 */
 	public void traiterChargement(String nomQualifie) 
 	{
@@ -157,8 +157,8 @@ public class Serveur {
 	}
 
 	/**
-	 * traiterCompilation : traite la compilation d’un fichier source java. Confirme au client
-	 * que la compilation s’est faite correctement. Le fichier source est donné par son chemin
+	 * traiterCompilation : traite la compilation dï¿½un fichier source java. Confirme au client
+	 * que la compilation sï¿½est faite correctement. Le fichier source est donnï¿½ par son chemin
 	 * relatif par rapport au chemin des fichiers sources.
 	 */
 	public void traiterCompilation(String cheminRelatifFichierSource) 
@@ -167,11 +167,11 @@ public class Serveur {
 	}
 
 	/**
-	 * traiterAppel : traite l’appel d’une méthode, en prenant comme argument l’objet
-	 * sur lequel on effectue l’appel, le nom de la fonction à appeler, un tableau de nom de 
-	 * types des arguments, et un tableau d’arguments pour la fonction. Le résultat de la 
-	 * fonction est renvoyé par le serveur au client (ou le message que tout s’est bien 
-	 * passé)
+	 * traiterAppel : traite lï¿½appel dï¿½une mï¿½thode, en prenant comme argument lï¿½objet
+	 * sur lequel on effectue lï¿½appel, le nom de la fonction ï¿½ appeler, un tableau de nom de 
+	 * types des arguments, et un tableau dï¿½arguments pour la fonction. Le rï¿½sultat de la 
+	 * fonction est renvoyï¿½ par le serveur au client (ou le message que tout sï¿½est bien 
+	 * passï¿½)
 	 **/
 	public void traiterAppel(Object pointeurObjet, String nomFonction, String[] types,Object[] valeurs) 
 	{
