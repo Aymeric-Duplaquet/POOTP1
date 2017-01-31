@@ -1,9 +1,13 @@
 package serveur;
 import java.net.*;
+import java.util.Hashtable;
 import java.io.*;
 
 import javax.tools.JavaCompiler;
 import javax.tools.ToolProvider;
+
+import com.sun.corba.se.spi.activation.Server;
+import com.sun.corba.se.spi.ior.Identifiable;
 
 import common.Commande;
 
@@ -16,9 +20,11 @@ public class Serveur {
 	private ObjectInputStream inFromClient;
 	private ObjectOutputStream  outToClient;
 	
+	public Hashtable<String, Object> ident;
+	
 
 	//Tempo main pour test
-	public static void main(String[] args) throws IOException
+	public static void main(String[] args) throws IOException, ClassNotFoundException, InstantiationException, IllegalAccessException
 	{
 		int port = Integer.parseInt(args[0]);
 		Serveur serveur = new Serveur(port);
@@ -41,6 +47,11 @@ public class Serveur {
 		test.traiteCommande(testCmd);
 		 */
 		serveur.traiterCompilation("./src/ca/uqac/registraire/Cours.java");
+		serveur.traiterChargement("ca.uqac.registraire.Cours");
+		serveur.traiterCreation(Class.forName("ca.uqac.registraire.Cours"), "Hello");
+		
+		System.out.println(serveur.ident.get("Hello").toString());
+		
 
 	}
 
@@ -51,6 +62,7 @@ public class Serveur {
 	public Serveur (int port) throws IOException 
 	{
 		serverSocket = new ServerSocket(port);
+		ident = new Hashtable<String,Object>();
 	}
 
 	/**
@@ -163,19 +175,28 @@ public class Serveur {
 	/**
 	 * traiterCreation : traite la cr�ation d�un objet. Confirme au client que la cr�ation
 	 * s�est faite correctement.
+	 * @throws IllegalAccessException 
+	 * @throws InstantiationException 
 	 */
-	public void traiterCreation(Class classeDeLobjet, String identificateur) 
+	public void traiterCreation(Class classeDeLobjet, String identificateur) throws InstantiationException, IllegalAccessException 
 	{
-
+		Object tempo = classeDeLobjet.newInstance();
+		ident.put(identificateur, tempo);
+		
+		
 	}
 
 	/**
 	 * traiterChargement : traite le chargement d�une classe. Confirmes au client que la cr�ation
 	 * s�est faite correctement.
+	 * @throws ClassNotFoundException 
+	 * @throws IllegalAccessException 
+	 * @throws InstantiationException 
 	 */
-	public void traiterChargement(String nomQualifie) 
+	public void traiterChargement(String nomQualifie) throws ClassNotFoundException, InstantiationException, IllegalAccessException 
 	{
-
+		ClassLoader classLoad = ClassLoader.getSystemClassLoader();
+		Class tempoClass = classLoad.loadClass(nomQualifie);
 	}
 
 	/**
