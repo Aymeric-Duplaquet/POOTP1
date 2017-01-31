@@ -2,6 +2,9 @@ package serveur;
 import java.net.*;
 import java.io.*;
 
+import javax.tools.JavaCompiler;
+import javax.tools.ToolProvider;
+
 import common.Commande;
 
 
@@ -19,7 +22,7 @@ public class Serveur {
 	{
 		int port = Integer.parseInt(args[0]);
 		Serveur serveur = new Serveur(port);
-		
+		/*
 		while(true)
 		{
 			try 
@@ -30,13 +33,14 @@ public class Serveur {
 				e.printStackTrace();
 				break;
 			}
-		}
+		}*/
 
 
 		/*Commande testCmd = new Commande();
 		testCmd.setCommande("compilation#chemin_relatif_du_fichier_source_1");
 		test.traiteCommande(testCmd);
 		 */
+		serveur.traiterCompilation("./src/ca/uqac/registraire/Cours.java");
 
 	}
 
@@ -98,7 +102,14 @@ public class Serveur {
 		switch (uneCommande.getType()) {
 		case compilation : {
 			System.out.println("Commande compilation detect�");
-			traiterCompilation(strCmd);
+			String[] listParam = strCmd.split("#");
+			
+			String[] listChemin = listParam[0].split(",");
+			for(int i = 0; i<listChemin.length;i++)
+			{
+				traiterCompilation(listChemin[i]);
+			}
+			
 			break;
 		}
 		case chargement : {
@@ -174,6 +185,9 @@ public class Serveur {
 	 */
 	public void traiterCompilation(String cheminRelatifFichierSource) 
 	{
+		JavaCompiler compil = ToolProvider.getSystemJavaCompiler();
+		System.out.println(compil);
+		compil.run(null, null, null, cheminRelatifFichierSource);
 		
 	}
 
