@@ -123,7 +123,7 @@ public class Serveur {
 		case lecture : {
 			System.out.println("Commande lecture detectï¿½");
 			outToClient.writeObject(new String("Hello from serveur"));
-			System.out.println("Réponse envoyé");
+			System.out.println("Rï¿½ponse envoyï¿½");
 			break;
 		}
 		case ecriture : {
@@ -133,7 +133,7 @@ public class Serveur {
 		case fonction : {
 			System.out.println("Commande fonction detectï¿½");
 			outToClient.writeObject(new String("Hello from serveur"));
-			System.out.println("Réponse envoyé");
+			System.out.println("Rï¿½ponse envoyï¿½");
 			break;
 		}
 		default:
