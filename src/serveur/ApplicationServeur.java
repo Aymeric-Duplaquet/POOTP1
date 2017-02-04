@@ -13,10 +13,12 @@ import common.Resultat;
 
 
 
-public class Serveur {
+public class ApplicationServeur {
 
 	private ServerSocket serverSocket;	
+	//Liste des object créer par le clien sur le serveur par la commande Creation.
 	private Hashtable<String, Object> ident;
+	//Liste des classes chargé par le client sur le serveur par la commande Chargement.(Non utilisé) 
 	private Hashtable<String, Class<? extends Object>> classTable;
 
 
@@ -55,7 +57,7 @@ public class Serveur {
 	 * prend le numï¿½ro de port, crï¿½e un SocketServer sur le port
 	 * @throws IOException 
 	 */
-	public Serveur (int port) throws IOException 
+	public ApplicationServeur (int port) throws IOException 
 	{
 		serverSocket = new ServerSocket(port);
 		ident = new Hashtable<String,Object>();
@@ -312,7 +314,7 @@ public class Serveur {
 	 * types des arguments, et un tableau dï¿½arguments pour la fonction. Le rï¿½sultat de la 
 	 * fonction est renvoyï¿½ par le serveur au client (ou le message que tout sï¿½est bien 
 	 * passï¿½)
-	 * @throws IOException 
+	 * @throws Exception 
 	 **/
 	public Object traiterAppel(Object pointeurObjet, String nomFonction, String[] types,Object[] valeurs) throws Exception
 	{
@@ -363,6 +365,7 @@ public class Serveur {
 		return valeur;
 	}
 	
+	//Un forname incluans les types primitifs.
 	private Class<? extends Object> forNamePrimitive(String className) throws ClassNotFoundException
 	{
 		try
