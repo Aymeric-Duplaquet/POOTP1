@@ -258,15 +258,18 @@ public class ApplicationServeur {
 
 		} 
 		catch (NoSuchFieldException e) {
-			//
+			//Cas le champ n'est pas publique
+			//Construction du nom du setteur
 			String temp = attribut.substring(0, 1).toUpperCase() + attribut.substring(1, attribut.length());
 			String nomSetteur = "set" + temp;
-			System.out.println(nomSetteur);
 
+			
+			//On obtien la liste de toutes les méthode
 			Method m = null;
 			Method[] tabM = classObject.getMethods();
 			for(int i=0;i<tabM.length && m == null;i++)
 			{
+				//On cherche la méthode avec le nom du setteur
 				if(tabM[i].getName().compareTo(nomSetteur) == 0)
 				{
 					m=tabM[i];
@@ -274,11 +277,15 @@ public class ApplicationServeur {
 			}
 			if(m!=null)
 			{
+				//On a trouvé la méthode
+				//On trouve le type du paramètre voulu. (Et donc le type du champ à écrire, normalement)
 				Class<? extends Object>[] listParam = m.getParameterTypes();
+				//On invoque la méthode avec une transcription de la valeur de string au type voulu
 				m.invoke(pointeurObjet, stringToObject(listParam[0].getName(),valeur));
 			}
 			else
 			{
+				//Pas de méthode de setteur, on envoie une exception
 				throw new NoSuchMethodException();
 			}
 		}
@@ -292,7 +299,9 @@ public class ApplicationServeur {
 	 */
 	public void traiterCreation(Class<? extends Object> classeDeLobjet, String identificateur) throws InstantiationException, IllegalAccessException 
 	{
+		//Instantiation de l'objet
 		Object tempo = classeDeLobjet.newInstance();
+		//On garde une trace de l'objet à partir de son identificatieur
 		ident.put(identificateur, tempo);
 	}
 
@@ -305,7 +314,9 @@ public class ApplicationServeur {
 	 */
 	public void traiterChargement(String nomQualifie) throws ClassNotFoundException, InstantiationException, IllegalAccessException 
 	{
+		//On récupère le classLoader du système
 		ClassLoader classLoad = ClassLoader.getSystemClassLoader();
+		//On charge la classe et on garde une trace de la classe chargé
 		Class<? extends Object> tempoClass = classLoad.loadClass(nomQualifie);
 		classTable.put(nomQualifie, tempoClass);
 	}
@@ -317,6 +328,7 @@ public class ApplicationServeur {
 	 */
 	public void traiterCompilation(String cheminRelatifFichierSource) 
 	{
+		//On compile la classe
 		JavaCompiler compil = ToolProvider.getSystemJavaCompiler();
 		compil.run(null, null, null, cheminRelatifFichierSource);
 
@@ -379,7 +391,7 @@ public class ApplicationServeur {
 		return valeur;
 	}
 	
-	//Un forname incluans les types primitifs.
+	//Un forname incluant les types primitifs.
 	private Class<? extends Object> forNamePrimitive(String className) throws ClassNotFoundException
 	{
 		try
