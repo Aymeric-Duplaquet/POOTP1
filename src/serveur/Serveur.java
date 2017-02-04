@@ -24,7 +24,7 @@ public class Serveur {
 	//Fonction main
 	public static void main(String[] args) throws IOException
 	{
-		//Création du serveur
+		//Creation du serveur
 		int port = Integer.parseInt(args[0]);
 		Serveur serveur = new Serveur(port);
 
@@ -117,7 +117,7 @@ public class Serveur {
 		String[] listParam = strCmd.split("#");
 
 		switch (uneCommande.getType()) {
-		case compilation : {
+		case Compilation : {
 			System.out.println("Commande compilation detectï¿½ : " + strCmd);
 			String[] listChemin = listParam[0].split(",");
 			for(int i = 0; i<listChemin.length;i++)
@@ -126,34 +126,34 @@ public class Serveur {
 			}
 			return new Resultat(null);
 		}
-		case chargement : {
+		case Chargement : {
 			System.out.println("Commande chargement detectï¿½: " + strCmd);
 			traiterChargement(listParam[0]);
 			return new Resultat(null);
 		}
-		case creation : {
+		case Creation : {
 			System.out.println("Commande creation detectï¿½: " + strCmd);
 			traiterCreation(Class.forName(listParam[0]), listParam[1]);
 			return new Resultat(null);
 		}
-		case lecture : {
+		case Lecture : {
 			System.out.println("Commande lecture detectï¿½: " + strCmd);
 			return new Resultat(traiterLecture(ident.get(listParam[0]), listParam[1]));
 		}
-		case ecriture : {
+		case Ecriture : {
 			System.out.println("Commande ecriture detectï¿½: " + strCmd);
 			traiterEcriture(ident.get(listParam[0]), listParam[1], listParam[2]);
 			return new Resultat(null);
 		}
-		case fonction : {
+		case Fonction : {
 			System.out.println("Commande fonction detectï¿½: " + strCmd);
 			
 			String[] tabListParam;
-			if(listParam.length>=3) //Cas la fonction prend 1 ou plusieurs paramètres 
+			if(listParam.length>=3) //Cas la fonction prend 1 ou plusieurs paramï¿½tres 
 			{
 				tabListParam = listParam[2].split(",");
 			}
-			else // Cas la fonction ne prend pas de paramètres
+			else // Cas la fonction ne prend pas de paramï¿½tres
 			{
 				tabListParam = new String[0];
 			}
@@ -164,17 +164,17 @@ public class Serveur {
 			for(int i = 0;i<tabListParam.length;i++)
 			{
 				String[] temp = tabListParam[i].split(":");
-				//Le type du paramètre
+				//Le type du paramï¿½tre
 				tabTypeParam[i] = temp[0];
 				
 				
-				if(temp[1].startsWith("ID(")) // Cas le paramètre est un objet coté serveur
+				if(temp[1].startsWith("ID(")) // Cas le paramï¿½tre est un objet cotï¿½ serveur
 				{
-					//On obtien l'identifiant au milieu de ID(*)
+					//On obtient l'identifiant au milieu de ID(*)
 					String identIn = temp[1].substring(3, temp[1].length()-1);
 					tabParam[i]=ident.get(identIn);
 					
-					//On test que l'identifian est du bon type
+					//On test que l'identifiant est du bon type
 					if(tabTypeParam[i].compareTo(tabParam[i].getClass().getName())!=0)
 					{
 						throw new IllegalArgumentException();
@@ -309,23 +309,23 @@ public class Serveur {
 	 **/
 	public Object traiterAppel(Object pointeurObjet, String nomFonction, String[] types,Object[] valeurs) throws Exception
 	{
-		//On obtien le tableau des types des paramètres de la méthode
+		//On obtien le tableau des types des paramï¿½tres de la mï¿½thode
 		Class<? extends Object>[] listType= new Class<?>[types.length];
 		for(int i = 0; i<listType.length;i++)
 		{
 			listType[i] = forNamePrimitive(types[i]);
 		}
-		//On recherche la méthode
+		//On recherche la mï¿½thode
 		Method m = pointeurObjet.getClass().getMethod(nomFonction, listType);
-		//Invocation de la méthode
+		//Invocation de la mï¿½thode
 		Object ret = m.invoke(pointeurObjet, valeurs);
 		return ret;
 
 	}
 
 	//Fonction pour parser les String en fonction du type voulu.
-	//Appliquée aux valeurs des commandes.
-	//Manque de généricité, absence d'une méthode générique pour parser des string en l'objet voulus.
+	//Appliquï¿½e aux valeurs des commandes.
+	//Manque de gï¿½nï¿½ricitï¿½, absence d'une mï¿½thode gï¿½nï¿½rique pour parser des string en l'objet voulus.
 	//Si le type voulu n'est pas reconu, on renvois la valeur en String.
 	private Object stringToObject(String typeVoulu,String valeur)
 	{

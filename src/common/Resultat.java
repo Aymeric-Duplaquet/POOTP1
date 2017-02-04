@@ -9,11 +9,16 @@ public class Resultat implements Serializable{
 	//Serial UID
 	private static final long serialVersionUID = -1767893394379159831L;
 
-	//Etat du résultat. Problem = false => Commande a été éxécuté sans problème
+	//Etat du resultat. Problem = false => Commande a ï¿½tï¿½ ï¿½xï¿½cutï¿½ sans problï¿½me
 	public Boolean problem;
 	
-	//Résultat de la commande, si celle-ci a produit un résultat
+	//Resultat de la commande, si celle-ci a produit un  resultat
 	public Object resultat;
+	
+	
+	// Comment faire la distinction cotÃ© client entre un rÃ©sultat qui s'est bien passÃ© mais qui retourne null(Ã©criture, compilation)
+	// et un rÃ©sultat qui s'est mal passÃ© mais qui retourne aussi nul.
+	// CotÃ© client il faut que je check la variable problÃ¨me, il ne peut pas seulement se contenter d'Ã©valuer le string.
 	
 	public Resultat()
 	{
@@ -21,6 +26,7 @@ public class Resultat implements Serializable{
 		resultat = null;
 	}
 	
+
 	public Resultat(Object in)
 	{
 		problem = false;
@@ -38,6 +44,10 @@ public class Resultat implements Serializable{
 			return resultat.toString();
 		}
 		
+	}
+	
+	public Boolean getProblem() {
+		return problem;
 	}
 
 }

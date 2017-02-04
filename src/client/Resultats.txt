@@ -1,14 +1,25 @@
+Le serveur a pris en compte Compilation
+Le serveur a pris en compte Chargement
+Le serveur a pris en compte Creation
+Le serveur a pris en compte Ecriture
 Architecture des applications
-
-
-
+Le serveur a pris en compte Creation
+Le serveur a pris en compte Ecriture
+Le serveur a pris en compte Chargement
+Le serveur a pris en compte Creation
+Le serveur a pris en compte Ecriture
+Le serveur a pris en compte Creation
+Le serveur a pris en compte Ecriture
+Problème détecté
+Le serveur a pris en compte Fonction
+Le serveur a pris en compte Fonction
 3.7
-
-
+Le serveur a pris en compte Fonction
+Le serveur a pris en compte Fonction
 3.85
-
-
-
-
+Le serveur a pris en compte Fonction
+Le serveur a pris en compte Fonction
+Le serveur a pris en compte Fonction
+Le serveur a pris en compte Fonction
 3.85
 Cours(Titre: Architecture des applications <Raymond Sauve[2.85] = 3.0 , Mathilde Boivin[3.85] = 3.7 >)

@@ -1,5 +1,5 @@
 package common;
 
 public enum TypeCommande {
-	compilation,chargement,creation,lecture,ecriture,fonction
+	Compilation,Chargement,Creation,Lecture,Ecriture,Fonction
 }
