@@ -25,16 +25,11 @@ public class ApplicationServeur {
 	//Fonction main
 	public static void main(String[] args) throws IOException
 	{
+	
 		
-		String t = "3.7";
-		float f = float.class.cast(t);
-		f*=2;
-		System.out.println(f);
-		
-		/*
 		//Creation du serveur
 		int port = Integer.parseInt(args[0]);
-		Serveur serveur = new Serveur(port);
+		ApplicationServeur serveur = new ApplicationServeur(port);
 
 
 
@@ -50,7 +45,7 @@ public class ApplicationServeur {
 				break;
 			}
 		}
-		*/
+		
 	}
 
 	/**
@@ -121,36 +116,46 @@ public class ApplicationServeur {
 	 */
 	public Resultat traiteCommande(Commande uneCommande) throws Exception 
 	{
-
+		
 		String strCmd = uneCommande.getCommande();
+		
+		//Séparation des paramètres
 		String[] listParam = strCmd.split("#");
 
+		//Switch sur le type de la commande
 		switch (uneCommande.getType()) {
 		case Compilation : {
 			System.out.println("Commande compilation detectï¿½ : " + strCmd);
+			//Séparation des différents fichiers à compiler
 			String[] listChemin = listParam[0].split(",");
+			//Compilation des différents fichiers
 			for(int i = 0; i<listChemin.length;i++)
 			{
 				traiterCompilation(listChemin[i]);
 			}
+			//Si pas d'exceptions, on retourn un resultat sans erreur
 			return new Resultat(null);
 		}
 		case Chargement : {
 			System.out.println("Commande chargement detectï¿½: " + strCmd);
+			//Chargement de la classe
 			traiterChargement(listParam[0]);
 			return new Resultat(null);
 		}
 		case Creation : {
 			System.out.println("Commande creation detectï¿½: " + strCmd);
-			traiterCreation(Class.forName(listParam[0]), listParam[1]);
+			//Création d'une instance d'une classe
+			traiterCreation(forNamePrimitive(listParam[0]), listParam[1]);
 			return new Resultat(null);
 		}
 		case Lecture : {
 			System.out.println("Commande lecture detectï¿½: " + strCmd);
+			//Lecture d'un attribut d'une classe déjà instancié coté serveur
 			return new Resultat(traiterLecture(ident.get(listParam[0]), listParam[1]));
 		}
 		case Ecriture : {
 			System.out.println("Commande ecriture detectï¿½: " + strCmd);
+			//Ecriture d'un attribut dans une instance de classe coté serveur 
 			traiterEcriture(ident.get(listParam[0]), listParam[1], listParam[2]);
 			return new Resultat(null);
 		}
@@ -181,9 +186,10 @@ public class ApplicationServeur {
 				{
 					//On obtient l'identifiant au milieu de ID(*)
 					String identIn = temp[1].substring(3, temp[1].length()-1);
+					//On récupère l'objet
 					tabParam[i]=ident.get(identIn);
 					
-					//On test que l'identifiant est du bon type
+					//On test que l'objet est du bon type
 					if(tabTypeParam[i].compareTo(tabParam[i].getClass().getName())!=0)
 					{
 						throw new IllegalArgumentException();
@@ -195,11 +201,12 @@ public class ApplicationServeur {
 				}
 
 			}
-			
+			//On traite l'appel et on renvoi le résultat
 			return new Resultat(traiterAppel(ident.get(listParam[0]), listParam[1], tabTypeParam, tabParam));
 		}
 		default:
 			System.out.println("Commande non reconnue");
+			//On envoie resultat
 			return new Resultat();
 		}
 	}
@@ -214,16 +221,21 @@ public class ApplicationServeur {
 		Class<? extends Object> classObject= pointeurObjet.getClass();
 
 		try {
+			//Si le champ est publique, on trouve l'utilise directement
 			Field tempoField = classObject.getField(attribut);
 			return tempoField.get(pointeurObjet);
 
 		} 
 		catch (NoSuchFieldException e) {
+			//Sinon on cherche le get du champ
+			//Construction du nom de la méthode
 			String temp = attribut.substring(0, 1).toUpperCase() + attribut.substring(1, attribut.length());
 			String nomGetteur = "get" + temp;
-
+			
+			//Recherche de la méthode et appel
 			Method m = classObject.getMethod(nomGetteur, (Class<?>[])null);
 			Object resultat = m.invoke(pointeurObjet,(Object[]) null);
+			//Retour du résultat si méthode a pu être appellé
 			return resultat;
 			
 
@@ -240,11 +252,13 @@ public class ApplicationServeur {
 		Class<? extends Object> classObject= pointeurObjet.getClass();
 
 		try {
+			//Si le champ est publique, on écrit directement
 			Field tempoField = classObject.getField(attribut);
 			tempoField.set(pointeurObjet, valeur);
 
 		} 
 		catch (NoSuchFieldException e) {
+			//
 			String temp = attribut.substring(0, 1).toUpperCase() + attribut.substring(1, attribut.length());
 			String nomSetteur = "set" + temp;
 			System.out.println(nomSetteur);

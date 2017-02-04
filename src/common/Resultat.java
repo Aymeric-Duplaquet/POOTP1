@@ -6,8 +6,9 @@ import java.io.Serializable;
 public class Resultat implements Serializable{
 
 
+
 	//Serial UID
-	private static final long serialVersionUID = -1767893394379159831L;
+	private static final long serialVersionUID = 2895296755313579268L;
 
 	//Etat du resultat. Problem = false => Commande a �t� �x�cut� sans probl�me
 	public Boolean problem;
