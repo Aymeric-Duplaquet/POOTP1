@@ -39,7 +39,7 @@ public class ApplicationClient {
 	}
 
 	// Prend en entree un fichier contenant une liste de commandes et charge une commande
-	// dans une variable retournÃ©e de type Commande.
+	// dans une variable retournee de type Commande.
 	public Commande saisisCommande(BufferedReader fichier) throws ClassNotFoundException {
 
 		Commande commande = new Commande();
@@ -60,16 +60,16 @@ public class ApplicationClient {
 		return commande;
 	}
 
-	// Prend en entrÃ©e une Commande, associe un type Ã  la Commande en discriminant le mot avant le #,
-	// puis retourne la mÃªme Commande qu'en entrÃ©e sans "xxxxx#".
-	// La commande en entrÃ©e "xxxxx#yyyyy" devient en sortie "yyyyy" avec le type "xxxxx".
+	// Prend en entree une Commande, associe un type a la Commande en discriminant le mot avant le #,
+	// puis retourne la meme Commande qu'en entree sans "xxxxx#".
+	// La commande en entree "xxxxx#yyyyy" devient en sortie "yyyyy" avec le type "xxxxx".
 	public Commande discriminationCommande (Commande commande){
 
 
 		String strCmd = commande.getCommande();
-		// La Commande est split en deux parties grÃ¢ce au #.
+		// La Commande est split en deux parties grace au #.
 		String[] tempoSplit = strCmd.split("#",2);
-		// On ne s'intÃ©resse ici qu'Ã  la premiÃ¨re partie pour faire une comparaison avec les Commandes existantes
+		// On ne s'interesse ici qu'a la premiere partie pour faire une comparaison avec les Commandes existantes
 		// et associer le bon type.
 		String commandeTypeStr = tempoSplit[0];
 
@@ -108,7 +108,7 @@ public class ApplicationClient {
 	}
 
 	// Ouvre les fichiers "Commandes.txt" et "Resultats.txt".
-	// Les ouvertures sont stockÃ©es dans deux BufferedReader privÃ©s.
+	// Les ouvertures sont stockees dans deux BufferedReader prives.
 	public void initialise(String fichCommandes, String fichSortie) {
 
 		//Ouverture de "Commandes.txt".
@@ -140,7 +140,7 @@ public class ApplicationClient {
 		resultWriter.close();
 	}
 
-	// Prend en entrÃ©e une Commande et la fait executer par le serveur. Le resultat execute est retournee par le serveur.
+	// Prend en entree une Commande et la fait executer par le serveur. Le resultat execute est retournee par le serveur.
 	// Si la commande ne retourne pas de resultat, on retourne null.
 	// Chaque appel ouvre, execute et ferme une connexion.
 	public Object traiteCommande(Commande uneCommande) throws ClassNotFoundException {
@@ -188,7 +188,7 @@ public class ApplicationClient {
 		return fromServer;
 	}
 
-	// MÃ©thode de test
+	// Methode de test
 	public void scenario() throws ClassNotFoundException {
 		System.out.println("Debut des traitements:");
 		Commande prochaine = saisisCommande(commandesReader);
@@ -201,13 +201,13 @@ public class ApplicationClient {
 		System.out.println("Fin des traitements");
 	}
 
-	// Prend 4 arguments: 1) â€œhostnameâ€� du serveur, 2) numÃ©ro de port,3) nom du fichier de commandes, et 4) nom du fichier de sortie.
+	// Prend 4 arguments: 1) hostname du serveur, 2) numero de port,3) nom du fichier de commandes, et 4) nom du fichier de sortie.
 	public static void main(String[] args) throws ClassNotFoundException, IOException {
-		//CrÃ©er une instance de ApplicationClient.
+		//Creer une instance de ApplicationClient.
 		ApplicationClient appli = new ApplicationClient(args[0],args[1]);
 		// Ouverture des fichiers.
 		appli.initialise(args[2], args[3]);
-		// ExÃ©cution du scÃ©nario.
+		// Execution du scenario.
 		appli.scenario();
 		// Fermeture des fichiers.
 		appli.close();

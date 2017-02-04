@@ -16,9 +16,9 @@ import common.Resultat;
 public class ApplicationServeur {
 
 	private ServerSocket serverSocket;	
-	//Liste des object créer par le clien sur le serveur par la commande Creation.
+	//Liste des objets crees par le client sur le serveur par la commande Creation.
 	private Hashtable<String, Object> ident;
-	//Liste des classes chargé par le client sur le serveur par la commande Chargement.(Non utilisé) 
+	//Liste des classes chargees par le client sur le serveur par la commande Chargement.
 	private Hashtable<String, Class<? extends Object>> classTable;
 
 
@@ -49,7 +49,7 @@ public class ApplicationServeur {
 	}
 
 	/**
-	 * prend le numï¿½ro de port, crï¿½e un SocketServer sur le port
+	 * prend le numero de port, cree un SocketServer sur le port
 	 * @throws IOException 
 	 */
 	public ApplicationServeur (int port) throws IOException 
@@ -60,8 +60,8 @@ public class ApplicationServeur {
 	}
 
 	/**
-	 * Se met en attente de connexions des clients. Suite aux connexions, elle lit
-	 * ce qui est envoyï¿½ ï¿½ travers la Socket, recrï¿½e lï¿½objet Commande envoyï¿½ par
+	 * Se met en attente de connexion des clients. Suite aux connexions, elle lit
+	 * ce qui est envoye  a travers la Socket, recrute un objet Commande envoye par
 	 * le client, et appellera traiterCommande(Commande uneCommande)
 	 * @throws IOException 
 	 * @throws ClassNotFoundException 
@@ -72,12 +72,12 @@ public class ApplicationServeur {
 	{
 		//Ouverture du socket
 		Socket clientSocket = serverSocket.accept();
-		// Pour Ã©crire des informations Ã  destination du client.
+		// Pour ecrire des informations a destination du client.
 		ObjectOutputStream outToClient  = new ObjectOutputStream(clientSocket.getOutputStream());
 		// Pour lire les informations en provenance du client.
 		ObjectInputStream inFromClient = new ObjectInputStream(clientSocket.getInputStream());	
 		
-		//Object commande entrant
+		//Objet commande entrant
 		Object inputObject;
 		Commande inCmd;
 		//Attente d'une commande
@@ -119,21 +119,21 @@ public class ApplicationServeur {
 		
 		String strCmd = uneCommande.getCommande();
 		
-		//Séparation des paramètres
+		//Separation des parametres
 		String[] listParam = strCmd.split("#");
 
 		//Switch sur le type de la commande
 		switch (uneCommande.getType()) {
 		case Compilation : {
 			System.out.println("Commande compilation detectï¿½ : " + strCmd);
-			//Séparation des différents fichiers à compiler
+			//Separation des differents fichiers compiles
 			String[] listChemin = listParam[0].split(",");
-			//Compilation des différents fichiers
+			//Compilation des differents fichiers
 			for(int i = 0; i<listChemin.length;i++)
 			{
 				traiterCompilation(listChemin[i]);
 			}
-			//Si pas d'exceptions, on retourn un resultat sans erreur
+			//Si pas d'exception, on retourne un resultat sans erreur.
 			return new Resultat(null);
 		}
 		case Chargement : {
@@ -144,18 +144,18 @@ public class ApplicationServeur {
 		}
 		case Creation : {
 			System.out.println("Commande creation detectï¿½: " + strCmd);
-			//Création d'une instance d'une classe
+			//Creation d'une instance d'une classe
 			traiterCreation(forNamePrimitive(listParam[0]), listParam[1]);
 			return new Resultat(null);
 		}
 		case Lecture : {
 			System.out.println("Commande lecture detectï¿½: " + strCmd);
-			//Lecture d'un attribut d'une classe déjà instancié coté serveur
+			//Lecture d'un attribut d'une classe deja instancie cote serveur
 			return new Resultat(traiterLecture(ident.get(listParam[0]), listParam[1]));
 		}
 		case Ecriture : {
 			System.out.println("Commande ecriture detectï¿½: " + strCmd);
-			//Ecriture d'un attribut dans une instance de classe coté serveur 
+			//Ecriture d'un attribut dans une instance de classe cote serveur 
 			traiterEcriture(ident.get(listParam[0]), listParam[1], listParam[2]);
 			return new Resultat(null);
 		}
@@ -163,11 +163,11 @@ public class ApplicationServeur {
 			System.out.println("Commande fonction detectï¿½: " + strCmd);
 			
 			String[] tabListParam;
-			if(listParam.length>=3) //Cas la fonction prend 1 ou plusieurs paramï¿½tres 
+			if(listParam.length>=3) //Cas la fonction prend 1 ou plusieurs parametres 
 			{
 				tabListParam = listParam[2].split(",");
 			}
-			else // Cas la fonction ne prend pas de paramï¿½tres
+			else // Cas la fonction ne prend pas de parametres
 			{
 				tabListParam = new String[0];
 			}
@@ -178,15 +178,15 @@ public class ApplicationServeur {
 			for(int i = 0;i<tabListParam.length;i++)
 			{
 				String[] temp = tabListParam[i].split(":");
-				//Le type du paramï¿½tre
+				//Le type du parametre
 				tabTypeParam[i] = temp[0];
 				
 				
-				if(temp[1].startsWith("ID(")) // Cas le paramï¿½tre est un objet cotï¿½ serveur
+				if(temp[1].startsWith("ID(")) // Cas le parametre est un objet cote serveur
 				{
 					//On obtient l'identifiant au milieu de ID(*)
 					String identIn = temp[1].substring(3, temp[1].length()-1);
-					//On récupère l'objet
+					//On recupere l'objet
 					tabParam[i]=ident.get(identIn);
 					
 					//On test que l'objet est du bon type
@@ -201,7 +201,7 @@ public class ApplicationServeur {
 				}
 
 			}
-			//On traite l'appel et on renvoi le résultat
+			//On traite l'appel et on renvoi le resultat
 			return new Resultat(traiterAppel(ident.get(listParam[0]), listParam[1], tabTypeParam, tabParam));
 		}
 		default:
@@ -221,21 +221,21 @@ public class ApplicationServeur {
 		Class<? extends Object> classObject= pointeurObjet.getClass();
 
 		try {
-			//Si le champ est publique, on trouve l'utilise directement
+			//Si le champ est publique, on l'utilise directement
 			Field tempoField = classObject.getField(attribut);
 			return tempoField.get(pointeurObjet);
 
 		} 
 		catch (NoSuchFieldException e) {
 			//Sinon on cherche le get du champ
-			//Construction du nom de la méthode
+			//Construction du nom de la methode
 			String temp = attribut.substring(0, 1).toUpperCase() + attribut.substring(1, attribut.length());
 			String nomGetteur = "get" + temp;
 			
-			//Recherche de la méthode et appel
+			//Recherche de la methode et appel
 			Method m = classObject.getMethod(nomGetteur, (Class<?>[])null);
 			Object resultat = m.invoke(pointeurObjet,(Object[]) null);
-			//Retour du résultat si méthode a pu être appellé
+			//Retour du resultat si methode a pu etre appelle
 			return resultat;
 			
 
@@ -252,7 +252,7 @@ public class ApplicationServeur {
 		Class<? extends Object> classObject= pointeurObjet.getClass();
 
 		try {
-			//Si le champ est publique, on écrit directement
+			//Si le champ est publique, on ï¿½crit directement
 			Field tempoField = classObject.getField(attribut);
 			tempoField.set(pointeurObjet, valeur);
 
@@ -264,12 +264,12 @@ public class ApplicationServeur {
 			String nomSetteur = "set" + temp;
 
 			
-			//On obtien la liste de toutes les méthode
+			//On obtien la liste de toutes les mï¿½thode
 			Method m = null;
 			Method[] tabM = classObject.getMethods();
 			for(int i=0;i<tabM.length && m == null;i++)
 			{
-				//On cherche la méthode avec le nom du setteur
+				//On cherche la mï¿½thode avec le nom du setteur
 				if(tabM[i].getName().compareTo(nomSetteur) == 0)
 				{
 					m=tabM[i];
@@ -277,15 +277,15 @@ public class ApplicationServeur {
 			}
 			if(m!=null)
 			{
-				//On a trouvé la méthode
-				//On trouve le type du paramètre voulu. (Et donc le type du champ à écrire, normalement)
+				//On a trouvï¿½ la mï¿½thode
+				//On trouve le type du paramï¿½tre voulu. (Et donc le type du champ ï¿½ ï¿½crire, normalement)
 				Class<? extends Object>[] listParam = m.getParameterTypes();
-				//On invoque la méthode avec une transcription de la valeur de string au type voulu
+				//On invoque la mï¿½thode avec une transcription de la valeur de string au type voulu
 				m.invoke(pointeurObjet, stringToObject(listParam[0].getName(),valeur));
 			}
 			else
 			{
-				//Pas de méthode de setteur, on envoie une exception
+				//Pas de mï¿½thode de setteur, on envoie une exception
 				throw new NoSuchMethodException();
 			}
 		}
@@ -301,7 +301,7 @@ public class ApplicationServeur {
 	{
 		//Instantiation de l'objet
 		Object tempo = classeDeLobjet.newInstance();
-		//On garde une trace de l'objet à partir de son identificatieur
+		//On garde une trace de l'objet ï¿½ partir de son identificatieur
 		ident.put(identificateur, tempo);
 	}
 
@@ -314,9 +314,9 @@ public class ApplicationServeur {
 	 */
 	public void traiterChargement(String nomQualifie) throws ClassNotFoundException, InstantiationException, IllegalAccessException 
 	{
-		//On récupère le classLoader du système
+		//On rï¿½cupï¿½re le classLoader du systï¿½me
 		ClassLoader classLoad = ClassLoader.getSystemClassLoader();
-		//On charge la classe et on garde une trace de la classe chargé
+		//On charge la classe et on garde une trace de la classe chargï¿½
 		Class<? extends Object> tempoClass = classLoad.loadClass(nomQualifie);
 		classTable.put(nomQualifie, tempoClass);
 	}

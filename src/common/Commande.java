@@ -8,7 +8,7 @@ public class Commande implements Serializable{
 	private static final long serialVersionUID = -8595222036564446334L;
 	
 	
-	// La Commande demandée est stockée dans un String.
+	// La Commande demandee est stockee dans un String.
 	private String commande;
 	// Chaque Commande se voit attribuer un type selon une énumération.
 	private TypeCommande type;
