@@ -22,11 +22,13 @@ public class ApplicationClient {
 
 	// Port de communication pour les Sockets.
 	private int portNumber=4444;
+	
 	// Nom de la machine hebergeant le serveur.
 	private String hostName="";
 
 	// BufferdReader relatif au fichier Commandes.txt.
 	private BufferedReader commandesReader;
+	
 	// BufferdReader relatif au fichier Resultats.txt.
 	private BufferedWriter resultWriter;
 

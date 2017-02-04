@@ -15,8 +15,7 @@ import common.Resultat;
 
 public class Serveur {
 
-	private ServerSocket serverSocket;
-	
+	private ServerSocket serverSocket;	
 	private Hashtable<String, Object> ident;
 	private Hashtable<String, Class<? extends Object>> classTable;
 
@@ -97,8 +96,8 @@ public class Serveur {
 		
 		//Traitement de la commande
 		try {
-			Object temp = traiteCommande(inCmd);
-			outToClient.writeObject(new Resultat(temp));
+			Resultat temp = traiteCommande(inCmd);
+			outToClient.writeObject(temp);
 		} catch (Exception e) {
 			e.printStackTrace();
 			outToClient.writeObject(new Resultat());
