@@ -23,6 +23,13 @@ public class Serveur {
 	//Fonction main
 	public static void main(String[] args) throws IOException
 	{
+		
+		String t = "3.7";
+		float f = float.class.cast(t);
+		f*=2;
+		System.out.println(f);
+		
+		/*
 		//Creation du serveur
 		int port = Integer.parseInt(args[0]);
 		Serveur serveur = new Serveur(port);
@@ -41,6 +48,7 @@ public class Serveur {
 				break;
 			}
 		}
+		*/
 	}
 
 	/**
@@ -336,6 +344,22 @@ public class Serveur {
 		{
 			return Float.parseFloat(valeur);
 		}
+		else if(typeVoulu.compareTo("java.lang.Short")==0 || typeVoulu.compareTo("short")==0)
+		{
+			return Short.parseShort(valeur);
+		}
+		else if(typeVoulu.compareTo("java.lang.Integer")==0 || typeVoulu.compareTo("int")==0)
+		{
+			return Integer.parseInt(valeur);
+		} 
+		else if(typeVoulu.compareTo("java.lang.Long")==0 || typeVoulu.compareTo("long")==0)
+		{
+			return Long.parseLong(valeur);
+		}
+		else if(typeVoulu.compareTo("java.lang.Double")==0 || typeVoulu.compareTo("double")==0)
+		{
+			return Double.parseDouble(valeur);
+		}
 		return valeur;
 	}
 	
@@ -350,6 +374,34 @@ public class Serveur {
 			if(className.compareTo("float")==0)
 			{
 				return float.class;
+			}
+			else if(className.compareTo("byte")==0)
+			{
+				return byte.class;
+			}
+			else if(className.compareTo("short")==0)
+			{
+				return short.class;
+			}
+			else if(className.compareTo("int")==0)
+			{
+				return int.class;
+			}
+			else if(className.compareTo("long")==0)
+			{
+				return long.class;
+			}
+			else if(className.compareTo("double")==0)
+			{
+				return double.class;
+			}
+			else if(className.compareTo("boolean")==0)
+			{
+				return boolean.class;
+			}
+			else if(className.compareTo("char")==0)
+			{
+				return char.class;
 			}
 			throw e1;
 		}
