@@ -1,6 +1,5 @@
 package serveur;
 import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.*;
 import java.util.Hashtable;
@@ -9,11 +8,8 @@ import java.io.*;
 import javax.tools.JavaCompiler;
 import javax.tools.ToolProvider;
 
-import com.sun.corba.se.spi.activation.Server;
-import com.sun.corba.se.spi.ior.Identifiable;
-
-
 import common.Commande;
+import common.Resultat;
 
 
 
@@ -21,18 +17,20 @@ public class Serveur {
 
 	private ServerSocket serverSocket;
 	
-	private ObjectInputStream inFromClient;
-	private ObjectOutputStream  outToClient;
-	
-	public Hashtable<String, Object> ident;
-	
+	private Hashtable<String, Object> ident;
+	private Hashtable<String, Class<? extends Object>> classTable;
 
-	//Tempo main pour test
-	public static void main(String[] args) throws IOException, ClassNotFoundException, InstantiationException, IllegalAccessException
+
+	//Fonction main
+	public static void main(String[] args) throws IOException
 	{
+		//Création du serveur
 		int port = Integer.parseInt(args[0]);
 		Serveur serveur = new Serveur(port);
-		
+
+
+
+		//Boucle du serveur
 		while(true)
 		{
 			try 
@@ -44,20 +42,6 @@ public class Serveur {
 				break;
 			}
 		}
-
-
-		/*Commande testCmd = new Commande();
-		testCmd.setCommande("compilation#chemin_relatif_du_fichier_source_1");
-		test.traiteCommande(testCmd);
-		 */
-		/*
-		serveur.traiterCompilation("./src/ca/uqac/registraire/Cours.java");
-		serveur.traiterChargement("ca.uqac.registraire.Cours");
-		serveur.traiterCreation(Class.forName("ca.uqac.registraire.Cours"), "Hello");
-		
-		System.out.println(serveur.ident.get("Hello").toString());
-		*/
-
 	}
 
 	/**
@@ -68,6 +52,7 @@ public class Serveur {
 	{
 		serverSocket = new ServerSocket(port);
 		ident = new Hashtable<String,Object>();
+		classTable = new Hashtable<String,Class<? extends Object>>();
 	}
 
 	/**
@@ -79,35 +64,44 @@ public class Serveur {
 	 * @throws IllegalAccessException 
 	 * @throws InstantiationException 
 	 */         
-	public void aVosOrdres() throws IOException, ClassNotFoundException, InstantiationException, IllegalAccessException 
+	public void aVosOrdres() throws IOException
 	{
-
+		//Ouverture du socket
 		Socket clientSocket = serverSocket.accept();
 		// Pour Ã©crire des informations Ã  destination du client.
-		outToClient  = new ObjectOutputStream(clientSocket.getOutputStream());
+		ObjectOutputStream outToClient  = new ObjectOutputStream(clientSocket.getOutputStream());
 		// Pour lire les informations en provenance du client.
-		inFromClient = new ObjectInputStream(clientSocket.getInputStream());
-
+		ObjectInputStream inFromClient = new ObjectInputStream(clientSocket.getInputStream());	
+		
+		//Object commande entrant
 		Object inputObject;
 		Commande inCmd;
-		
-		
+		//Attente d'une commande
 		while(true)
 		{
-			inputObject = inFromClient.readObject();
-			if(inputObject!=null)
+			try
 			{
-				inCmd = (Commande) inputObject;
-				break;
+				inputObject = inFromClient.readObject();
+				if(inputObject!=null)
+				{
+					inCmd = (Commande) inputObject;
+					break;
+				}
 			}
+			catch(ClassNotFoundException e)
+			{
+				e.printStackTrace();
+			}
+
 		}
-		System.out.println("Nouvelle commande : ");
-		System.out.println("Serveur : "+ inCmd.getCommande());
+		
+		//Traitement de la commande
 		try {
-			traiteCommande(inCmd);
+			Object temp = traiteCommande(inCmd);
+			outToClient.writeObject(new Resultat(temp));
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
+			outToClient.writeObject(new Resultat());
 		}
 
 	}
@@ -116,100 +110,88 @@ public class Serveur {
 	 * prend uneCommande dument formattï¿½e, et la traite. Dï¿½pendant du type de commande, 
 	 * elle appelle la mï¿½thode spï¿½cialisï¿½e
 	 */
-	public void traiteCommande(Commande uneCommande) throws Exception 
+	public Resultat traiteCommande(Commande uneCommande) throws Exception 
 	{
-		
+
 		String strCmd = uneCommande.getCommande();
-		String commandeTypeStr;
 		String[] listParam = strCmd.split("#");
-		
+
 		switch (uneCommande.getType()) {
 		case compilation : {
-			System.out.println("Commande compilation detectï¿½");
+			System.out.println("Commande compilation detectï¿½ : " + strCmd);
 			String[] listChemin = listParam[0].split(",");
 			for(int i = 0; i<listChemin.length;i++)
 			{
 				traiterCompilation(listChemin[i]);
 			}
-			
-			break;
+			return new Resultat(null);
 		}
 		case chargement : {
-			System.out.println("Commande chargement detectï¿½");
+			System.out.println("Commande chargement detectï¿½: " + strCmd);
 			traiterChargement(listParam[0]);
-			break;
+			return new Resultat(null);
 		}
 		case creation : {
-			System.out.println("Commande creation detectï¿½");
+			System.out.println("Commande creation detectï¿½: " + strCmd);
 			traiterCreation(Class.forName(listParam[0]), listParam[1]);
-			break;
+			return new Resultat(null);
 		}
 		case lecture : {
-			System.out.println("Commande lecture detectï¿½");
-			try {
-				traiterLecture(ident.get(listParam[0]), listParam[1]);
-			} catch (Exception e) {
-				outToClient.writeObject(null);
-				System.out.println("Réponse envoyé");
-			}
-			break;
+			System.out.println("Commande lecture detectï¿½: " + strCmd);
+			return new Resultat(traiterLecture(ident.get(listParam[0]), listParam[1]));
 		}
 		case ecriture : {
-			System.out.println("Commande ecriture detectï¿½");
-			try {
-				traiterEcriture(ident.get(listParam[0]), listParam[1], listParam[2]);
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			break;
+			System.out.println("Commande ecriture detectï¿½: " + strCmd);
+			traiterEcriture(ident.get(listParam[0]), listParam[1], listParam[2]);
+			return new Resultat(null);
 		}
 		case fonction : {
-			System.out.println("Commande fonction detectï¿½");
+			System.out.println("Commande fonction detectï¿½: " + strCmd);
+			
 			String[] tabListParam;
-			if(listParam.length>=3)
+			if(listParam.length>=3) //Cas la fonction prend 1 ou plusieurs paramètres 
 			{
 				tabListParam = listParam[2].split(",");
 			}
-			else
+			else // Cas la fonction ne prend pas de paramètres
 			{
 				tabListParam = new String[0];
 			}
 			
+			//Construction des tableaux des types et valeurs de la fonction
 			String[] tabTypeParam = new String[tabListParam.length];
 			Object[] tabParam = new Object[tabListParam.length];
-			
 			for(int i = 0;i<tabListParam.length;i++)
 			{
 				String[] temp = tabListParam[i].split(":");
+				//Le type du paramètre
 				tabTypeParam[i] = temp[0];
 				
-				//TODO : cast le string en fonction du type précisé 
-				if(temp[1].startsWith("ID("))
+				
+				if(temp[1].startsWith("ID(")) // Cas le paramètre est un objet coté serveur
 				{
-					System.out.println("Param ID");
+					//On obtien l'identifiant au milieu de ID(*)
 					String identIn = temp[1].substring(3, temp[1].length()-1);
 					tabParam[i]=ident.get(identIn);
+					
+					//On test que l'identifian est du bon type
 					if(tabTypeParam[i].compareTo(tabParam[i].getClass().getName())!=0)
 					{
-						System.out.println("Not good");
-						outToClient.writeObject(null);
-						return;
+						throw new IllegalArgumentException();
 					}
 				}
 				else
 				{
 					tabParam[i] = stringToObject(temp[0], temp[1]);
 				}
-				
+
 			}
-			System.out.println("Appel De la fonction");
-			traiterAppel(ident.get(listParam[0]), listParam[1], tabTypeParam, tabParam);
-			break;
+			
+			return new Resultat(traiterAppel(ident.get(listParam[0]), listParam[1], tabTypeParam, tabParam));
 		}
 		default:
 			System.out.println("Commande non reconnue");
-			break;
+			return new Resultat();
 		}
 	}
 
@@ -218,25 +200,23 @@ public class Serveur {
 	 * socket
 	 * @throws Exception 
 	 */
-	public void traiterLecture(Object pointeurObjet, String attribut) throws Exception 
+	public Object traiterLecture(Object pointeurObjet, String attribut) throws Exception 
 	{
-		Class classObject= pointeurObjet.getClass();
-		
+		Class<? extends Object> classObject= pointeurObjet.getClass();
+
 		try {
 			Field tempoField = classObject.getField(attribut);
-			outToClient.writeObject(tempoField.get(pointeurObjet));
-			System.out.println("Réponse envoyé");
-			
+			return tempoField.get(pointeurObjet);
+
 		} 
 		catch (NoSuchFieldException e) {
 			String temp = attribut.substring(0, 1).toUpperCase() + attribut.substring(1, attribut.length());
 			String nomGetteur = "get" + temp;
-			System.out.println(nomGetteur);
+
+			Method m = classObject.getMethod(nomGetteur, (Class<?>[])null);
+			Object resultat = m.invoke(pointeurObjet,(Object[]) null);
+			return resultat;
 			
-			Method m = classObject.getMethod(nomGetteur, null);
-			Object resultat = m.invoke(pointeurObjet, null);
-			outToClient.writeObject(resultat);
-			System.out.println("Réponse envoyé");
 
 		}
 	}
@@ -248,18 +228,18 @@ public class Serveur {
 	 */
 	public void traiterEcriture(Object pointeurObjet, String attribut, String valeur) throws Exception
 	{
-		Class classObject= pointeurObjet.getClass();
-		
+		Class<? extends Object> classObject= pointeurObjet.getClass();
+
 		try {
 			Field tempoField = classObject.getField(attribut);
 			tempoField.set(pointeurObjet, valeur);
-			
+
 		} 
 		catch (NoSuchFieldException e) {
 			String temp = attribut.substring(0, 1).toUpperCase() + attribut.substring(1, attribut.length());
 			String nomSetteur = "set" + temp;
 			System.out.println(nomSetteur);
-			
+
 			Method m = null;
 			Method[] tabM = classObject.getMethods();
 			for(int i=0;i<tabM.length && m == null;i++)
@@ -271,7 +251,7 @@ public class Serveur {
 			}
 			if(m!=null)
 			{
-				Class[] listParam = m.getParameterTypes();
+				Class<? extends Object>[] listParam = m.getParameterTypes();
 				m.invoke(pointeurObjet, stringToObject(listParam[0].getName(),valeur));
 			}
 			else
@@ -287,7 +267,7 @@ public class Serveur {
 	 * @throws IllegalAccessException 
 	 * @throws InstantiationException 
 	 */
-	public void traiterCreation(Class classeDeLobjet, String identificateur) throws InstantiationException, IllegalAccessException 
+	public void traiterCreation(Class<? extends Object> classeDeLobjet, String identificateur) throws InstantiationException, IllegalAccessException 
 	{
 		Object tempo = classeDeLobjet.newInstance();
 		ident.put(identificateur, tempo);
@@ -303,7 +283,8 @@ public class Serveur {
 	public void traiterChargement(String nomQualifie) throws ClassNotFoundException, InstantiationException, IllegalAccessException 
 	{
 		ClassLoader classLoad = ClassLoader.getSystemClassLoader();
-		Class tempoClass = classLoad.loadClass(nomQualifie);
+		Class<? extends Object> tempoClass = classLoad.loadClass(nomQualifie);
+		classTable.put(nomQualifie, tempoClass);
 	}
 
 	/**
@@ -314,9 +295,8 @@ public class Serveur {
 	public void traiterCompilation(String cheminRelatifFichierSource) 
 	{
 		JavaCompiler compil = ToolProvider.getSystemJavaCompiler();
-		System.out.println(compil);
 		compil.run(null, null, null, cheminRelatifFichierSource);
-		
+
 	}
 
 	/**
@@ -327,24 +307,28 @@ public class Serveur {
 	 * passï¿½)
 	 * @throws IOException 
 	 **/
-	public void traiterAppel(Object pointeurObjet, String nomFonction, String[] types,Object[] valeurs) throws IOException , Exception
+	public Object traiterAppel(Object pointeurObjet, String nomFonction, String[] types,Object[] valeurs) throws Exception
 	{
-		Class[] listType= new Class[types.length];
+		//On obtien le tableau des types des paramètres de la méthode
+		Class<? extends Object>[] listType= new Class<?>[types.length];
 		for(int i = 0; i<listType.length;i++)
 		{
-			listType[i] = Class.forName(types[i]);
+			listType[i] = forNamePrimitive(types[i]);
 		}
-		
+		//On recherche la méthode
 		Method m = pointeurObjet.getClass().getMethod(nomFonction, listType);
-		Object temp = m.invoke(pointeurObjet, valeurs);
-		outToClient.writeObject(temp);
-		System.out.println("Réponse envoyé");
-		
+		//Invocation de la méthode
+		Object ret = m.invoke(pointeurObjet, valeurs);
+		return ret;
+
 	}
 
+	//Fonction pour parser les String en fonction du type voulu.
+	//Appliquée aux valeurs des commandes.
+	//Manque de généricité, absence d'une méthode générique pour parser des string en l'objet voulus.
+	//Si le type voulu n'est pas reconu, on renvois la valeur en String.
 	private Object stringToObject(String typeVoulu,String valeur)
 	{
-		System.out.println(typeVoulu);
 		if(typeVoulu.compareTo("java.lang.String")==0)
 		{
 			return valeur;
@@ -353,6 +337,23 @@ public class Serveur {
 		{
 			return Float.parseFloat(valeur);
 		}
-		return null;
+		return valeur;
+	}
+	
+	private Class<? extends Object> forNamePrimitive(String className) throws ClassNotFoundException
+	{
+		try
+		{
+			return Class.forName(className);
+		}
+		catch(ClassNotFoundException e1)
+		{
+			if(className.compareTo("float")==0)
+			{
+				return float.class;
+			}
+			throw e1;
+		}
+		
 	}
 }
